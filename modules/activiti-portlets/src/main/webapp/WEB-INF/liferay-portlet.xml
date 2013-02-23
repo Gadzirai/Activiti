@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<liferay-portlet-app>
+    <portlet>
+        <portlet-name>ActivitiExplorerPortlet</portlet-name>
+        <instanceable>false</instanceable>
+        <ajaxable>false</ajaxable>
+    </portlet>
+</liferay-portlet-app>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="Activiti_Portlets" version="2.5">
+    <display-name>Activiti Portlets</display-name>
+
+    <context-param>
+        <description>Vaadin production mode</description>
+        <param-name>productionMode</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
+    <!-- To load the Spring context -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- To allow session-scoped beans in Spring -->
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>com.liferay.portal.kernel.servlet.SerializableSessionAttributeListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>com.liferay.portal.kernel.servlet.PortletContextListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>VaadinPortletServlet</servlet-name>
+        <servlet-class>com.liferay.portal.kernel.servlet.PortletServlet</servlet-class>
+        <init-param>
+            <param-name>portlet-class</param-name>
+            <param-value>com.vaadin.terminal.gwt.server.ApplicationPortlet2</param-value>
+        </init-param>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>VaadinPortletServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+</web-app>

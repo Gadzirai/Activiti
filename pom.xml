@@ -699,6 +699,7 @@
         <module>modules/activiti-camel</module>
         <module>modules/activiti-cdi</module>
         <module>modules/activiti-osgi</module>
+        <module>modules/activiti-portlets</module>
       </modules>
       <build>
         <plugins>
