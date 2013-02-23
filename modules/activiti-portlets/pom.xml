@@ -98,6 +98,18 @@
             <artifactId>activiti-explorer</artifactId>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>org.springframework.web.portlet</artifactId>-->
+            <!--<version>3.1.2.RELEASE</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+            <version>3.1.2.RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>com.liferay.portal</groupId>
             <artifactId>portal-service</artifactId>

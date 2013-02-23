@@ -71,7 +71,7 @@
     <property name="i18nManager" ref="i18nManager" />
   </bean>
   
-  <bean name="explorerApp" class="org.activiti.portlets.explorer.application.ExplorerApp" scope="session">
+  <bean name="explorerApp" class="org.activiti.portlets.explorer.application.ActivitiExplorerPortletApplication" scope="session">
     <property name="environment" value="${activiti.ui.environment}" />
     <property name="useJavascriptDiagram" value="${activiti.ui.jsdiagram}" />
     <property name="userCache" ref="userCache" />

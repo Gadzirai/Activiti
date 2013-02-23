@@ -8,7 +8,7 @@
     <portlet>
         <portlet-name>ActivitiExplorerPortlet</portlet-name>
         <display-name>Activiti Explorer</display-name>
-        <portlet-class>com.vaadin.terminal.gwt.server.ApplicationPortlet2</portlet-class>
+        <portlet-class>org.activiti.portlets.explorer.portlet.ExplorerApplicationPortlet</portlet-class>
 
         <init-param>
             <name>application</name>
@@ -27,5 +27,9 @@
             <short-title>Explorer</short-title>
         </portlet-info>
     </portlet>
+
+    <listener>
+        <listener-class>org.activiti.portlets.explorer.portlet.SpringPortletRequestContextListener</listener-class>
+    </listener>
 
 </portlet-app>
