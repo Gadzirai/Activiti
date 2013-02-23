@@ -2,6 +2,7 @@ package org.activiti.portlets.explorer.portlet;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.ApplicationPortlet2;
+import com.vaadin.terminal.gwt.server.PortletApplicationContext2;
 import org.activiti.explorer.ExplorerApp;
 import org.activiti.portlets.explorer.application.ActivitiExplorerPortletApplication;
 import org.springframework.context.ApplicationContext;
@@ -65,6 +66,11 @@ public class ExplorerApplicationPortlet extends ApplicationPortlet2 {
         }
 
         try {
+            PortletApplicationContext2 context = getApplicationContext(request.getPortletSession());
+            Application application = context.getApplicationForWindowId(request.getWindowID());
+            if (application instanceof ActivitiExplorerPortletApplication) {
+                ((ActivitiExplorerPortletApplication)application).setInCtx();
+            }
             super.handleRequest(request, response);
         } finally {
             LocaleContextHolder.setLocaleContext(previousLocaleContext, false);

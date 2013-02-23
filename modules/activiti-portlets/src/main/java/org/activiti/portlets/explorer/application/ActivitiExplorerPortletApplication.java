@@ -4,6 +4,7 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.vaadin.service.ApplicationContext;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.gwt.server.PortletApplicationContext2;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -14,6 +15,7 @@ import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.explorer.Constants;
 import org.activiti.explorer.ExplorerApp;
 import org.activiti.explorer.identity.LoggedInUserImpl;
+import org.activiti.explorer.navigation.UriFragment;
 import org.activiti.explorer.ui.task.InboxPage;
 
 import java.util.List;
@@ -40,6 +42,7 @@ public class ActivitiExplorerPortletApplication extends
             portletContext.addPortletListener(this, this);
             portlet = true;
             setMainWindow(new Window());
+            getMainWindow().setTheme("activiti");
 
         } else{
             super.init();
@@ -47,6 +50,9 @@ public class ActivitiExplorerPortletApplication extends
 
     }
 
+    public void setInCtx() {
+        current.set(this);
+    }
 
     @Override
     public void handleRenderRequest(javax.portlet.RenderRequest renderRequest, javax.portlet.RenderResponse renderResponse, Window window) {
@@ -55,6 +61,7 @@ public class ActivitiExplorerPortletApplication extends
 
         try {
 //            setMainWindow(mainWindow);
+//            mainWindow.setHeight(null);
 //            mainWindow.setSizeFull();
 //            if (getUser() == null )       //TODO optimize!
             User portalUser = PortalUtil.getUser(renderRequest);
@@ -95,11 +102,13 @@ public class ActivitiExplorerPortletApplication extends
                     }
                     identityService.createMembership(userId, groupId);
                 }
-                if (PortalUtil.isOmniadmin(portalUser.getUserId())) {
+                LoggedInUserImpl loggedInUser = new LoggedInUserImpl(activitiUser, "********");
 
+                if (PortalUtil.isOmniadmin(portalUser.getUserId())) {
+                    loggedInUser.setUser(true);
+                    loggedInUser.setAdmin(true);
                 }
 
-                LoggedInUserImpl loggedInUser = new LoggedInUserImpl(activitiUser, "********");
                 List<Group> groups = identityService.createGroupQuery().groupMember(userId).list();
                 for (Group group : groups) {
                     if (Constants.SECURITY_ROLE.equals(group.getType())) {
@@ -117,19 +126,27 @@ public class ActivitiExplorerPortletApplication extends
                 setUser(loggedInUser);
                 Authentication.setAuthenticatedUserId(userId);
                 identityService.setAuthenticatedUserId(userId);
+
 //                viewManager.showDefaultPage();
-                mainWindow.removeAllComponents();
+                getMainWindow().removeAllComponents();
                 InboxPage c = new InboxPage();
-                c.setSizeFull();
-                mainWindow.addComponent(c);
+                c.setSizeUndefined();
+                c.setWidth(100, Sizeable.UNITS_PERCENTAGE);
+
+                getMainWindow().addComponent(c);
             } else {
-                mainWindow.removeAllComponents();
-                mainWindow.addComponent(new Label("Please sign in")); //TODO i18n
+                getMainWindow().removeAllComponents();
+                getMainWindow().addComponent(new Label("Please sign in")); //TODO i18n
             }
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void setCurrentUriFragment(UriFragment fragment) {
+        //nothing, we use portal for now
     }
 
     public void terminalError(com.vaadin.terminal.Terminal.ErrorEvent event) {

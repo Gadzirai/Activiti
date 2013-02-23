@@ -13,6 +13,7 @@
 
 package org.activiti.explorer.ui.mainlayout;
 
+import com.vaadin.terminal.Sizeable;
 import org.activiti.explorer.ExplorerApp;
 import org.activiti.explorer.I18nManager;
 import org.activiti.explorer.Messages;
@@ -45,6 +46,7 @@ public class MainLayout extends VerticalLayout {
     this.i18nManager = ExplorerApp.get().getI18nManager();
     
     setSizeFull();
+//    setWidth(100, Sizeable.UNITS_PERCENTAGE);
     addStyleName(ExplorerLayout.STYLE_MAIN_WRAPPER);
     
     initHeader();
@@ -77,6 +79,7 @@ public class MainLayout extends VerticalLayout {
   protected void initMain() {
     main = new CssLayout();
     main.setSizeFull();
+//    main.setWidth("100%");
     main.addStyleName(ExplorerLayout.STYLE_MAIN_CONTENT);
     addComponent(main);
     setExpandRatio(main, 1.0f);
