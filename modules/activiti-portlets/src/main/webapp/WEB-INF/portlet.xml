@@ -27,9 +27,4 @@
             <short-title>Explorer</short-title>
         </portlet-info>
     </portlet>
-
-    <listener>
-        <listener-class>org.activiti.portlets.explorer.portlet.SpringPortletRequestContextListener</listener-class>
-    </listener>
-
 </portlet-app>

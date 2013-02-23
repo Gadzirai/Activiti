@@ -35,6 +35,10 @@ public class NavigationFragmentChangeListener implements FragmentChangedListener
   protected NavigatorManager navigatorManager;
 
   public void fragmentChanged(FragmentChangedEvent source) {
+    //tomek@lipski.net.pl - handle vaadin/liferay lifecycle, which precedes fragment handling with portlet render events
+    ExplorerApp explorerApp = ExplorerApp.get();
+    if (explorerApp == null)
+        explorerApp = (ExplorerApp) source.getComponent().getApplication();
     String fragment = source.getUriFragmentUtility().getFragment();
     
     if (StringUtils.isNotEmpty(fragment)) {
@@ -53,13 +57,13 @@ public class NavigationFragmentChangeListener implements FragmentChangedListener
       // Delegate navigation to handler
       navigationHandler.handleNavigation(uriFragment);
     
-    } else if (ExplorerApp.get().getCurrentUriFragment() != null &&
-        ExplorerApp.get().getCurrentUriFragment().getUriParts() != null &&
-            ExplorerApp.get().getCurrentUriFragment().getUriParts().size() > 0) {
+    } else if (explorerApp.getCurrentUriFragment() != null &&
+            explorerApp.getCurrentUriFragment().getUriParts() != null &&
+            explorerApp.getCurrentUriFragment().getUriParts().size() > 0) {
       
-      Navigator navigationHandler = navigatorManager.getNavigator(ExplorerApp.get().getCurrentUriFragment().getUriParts().get(0));
+      Navigator navigationHandler = navigatorManager.getNavigator(explorerApp.getCurrentUriFragment().getUriParts().get(0));
       if (navigationHandler instanceof ProcessModelNavigator) {
-        navigationHandler.handleNavigation(ExplorerApp.get().getCurrentUriFragment());
+        navigationHandler.handleNavigation(explorerApp.getCurrentUriFragment());
       }
     }
     

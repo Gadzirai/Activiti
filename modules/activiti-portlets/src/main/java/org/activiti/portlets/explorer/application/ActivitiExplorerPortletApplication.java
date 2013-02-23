@@ -2,7 +2,6 @@ package org.activiti.portlets.explorer.application;
 
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.gwt.server.PortletApplicationContext2;
@@ -14,10 +13,12 @@ import org.activiti.engine.identity.Group;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.explorer.Constants;
 import org.activiti.explorer.ExplorerApp;
-import org.activiti.explorer.identity.LoggedInUser;
 import org.activiti.explorer.identity.LoggedInUserImpl;
+import org.activiti.explorer.ui.task.InboxPage;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Portlet application for Activiti Explorer.
@@ -38,7 +39,7 @@ public class ActivitiExplorerPortletApplication extends
             PortletApplicationContext2 portletContext = (PortletApplicationContext2) context;
             portletContext.addPortletListener(this, this);
             portlet = true;
-            setMainWindow(mainWindow);
+            setMainWindow(new Window());
 
         } else{
             super.init();
@@ -53,6 +54,8 @@ public class ActivitiExplorerPortletApplication extends
         current.set(this);
 
         try {
+//            setMainWindow(mainWindow);
+//            mainWindow.setSizeFull();
 //            if (getUser() == null )       //TODO optimize!
             User portalUser = PortalUtil.getUser(renderRequest);
             if (portalUser != null) {
@@ -114,7 +117,11 @@ public class ActivitiExplorerPortletApplication extends
                 setUser(loggedInUser);
                 Authentication.setAuthenticatedUserId(userId);
                 identityService.setAuthenticatedUserId(userId);
-                viewManager.showDefaultPage();
+//                viewManager.showDefaultPage();
+                mainWindow.removeAllComponents();
+                InboxPage c = new InboxPage();
+                c.setSizeFull();
+                mainWindow.addComponent(c);
             } else {
                 mainWindow.removeAllComponents();
                 mainWindow.addComponent(new Label("Please sign in")); //TODO i18n
@@ -123,6 +130,13 @@ public class ActivitiExplorerPortletApplication extends
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void terminalError(com.vaadin.terminal.Terminal.ErrorEvent event) {
+        Logger.getLogger(ActivitiExplorerPortletApplication.class.getName())
+                .log(Level.SEVERE, "Vaadin terminal error", event.getThrowable());
+
+        super.terminalError(event);
     }
 
     @Override
