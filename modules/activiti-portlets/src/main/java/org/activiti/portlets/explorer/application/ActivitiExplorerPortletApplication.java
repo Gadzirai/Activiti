@@ -41,8 +41,8 @@ public class ActivitiExplorerPortletApplication extends
             PortletApplicationContext2 portletContext = (PortletApplicationContext2) context;
             portletContext.addPortletListener(this, this);
             portlet = true;
-            setMainWindow(new Window());
-            getMainWindow().setTheme("activiti");
+            setMainWindow(mainWindow);
+//            getMainWindow().setTheme("activiti");
 
         } else{
             super.init();
@@ -61,7 +61,7 @@ public class ActivitiExplorerPortletApplication extends
 
         try {
 //            setMainWindow(mainWindow);
-//            mainWindow.setHeight(null);
+            mainWindow.setHeight(null);
 //            mainWindow.setSizeFull();
 //            if (getUser() == null )       //TODO optimize!
             User portalUser = PortalUtil.getUser(renderRequest);
@@ -127,13 +127,13 @@ public class ActivitiExplorerPortletApplication extends
                 Authentication.setAuthenticatedUserId(userId);
                 identityService.setAuthenticatedUserId(userId);
 
-//                viewManager.showDefaultPage();
-                getMainWindow().removeAllComponents();
-                InboxPage c = new InboxPage();
-                c.setSizeUndefined();
-                c.setWidth(100, Sizeable.UNITS_PERCENTAGE);
+                viewManager.showTasksPage();
+//                getMainWindow().removeAllComponents();
+//                InboxPage c = new InboxPage();
+//                c.setSizeUndefined();
+//                c.setWidth(100, Sizeable.UNITS_PERCENTAGE);
 
-                getMainWindow().addComponent(c);
+//                getMainWindow().addComponent(c);
             } else {
                 getMainWindow().removeAllComponents();
                 getMainWindow().addComponent(new Label("Please sign in")); //TODO i18n

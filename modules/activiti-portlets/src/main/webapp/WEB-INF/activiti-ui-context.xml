@@ -66,7 +66,7 @@
     <property name="navigatorManager" ref="navigatorManager" />
   </bean>
   
-  <bean name="mainWindow" class="org.activiti.explorer.ui.MainWindow" scope="session">
+  <bean name="mainWindow" class="org.activiti.portlets.explorer.ui.PortletMainWindow" scope="session">
     <property name="navigationFragmentChangeListener" ref="navigationFragmentChangeListener" />
     <property name="i18nManager" ref="i18nManager" />
   </bean>
