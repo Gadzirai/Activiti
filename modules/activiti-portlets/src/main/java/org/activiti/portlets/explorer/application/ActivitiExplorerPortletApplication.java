@@ -1,10 +1,12 @@
 package org.activiti.portlets.explorer.application;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.vaadin.service.ApplicationContext;
-import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.gwt.server.PortletApplicationContext2;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -16,8 +18,9 @@ import org.activiti.explorer.Constants;
 import org.activiti.explorer.ExplorerApp;
 import org.activiti.explorer.identity.LoggedInUserImpl;
 import org.activiti.explorer.navigation.UriFragment;
-import org.activiti.explorer.ui.task.InboxPage;
 
+import javax.portlet.PortletRequest;
+import javax.portlet.RenderRequest;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,8 +45,7 @@ public class ActivitiExplorerPortletApplication extends
             portletContext.addPortletListener(this, this);
             portlet = true;
             setMainWindow(mainWindow);
-//            getMainWindow().setTheme("activiti");
-
+            setErrorHandler(this);
         } else{
             super.init();
         }
@@ -64,76 +66,9 @@ public class ActivitiExplorerPortletApplication extends
             mainWindow.setHeight(null);
 //            mainWindow.setSizeFull();
 //            if (getUser() == null )       //TODO optimize!
-            User portalUser = PortalUtil.getUser(renderRequest);
+            User portalUser = bridgePortalUser(renderRequest);
             if (portalUser != null) {
-                String userId = String.valueOf(portalUser.getUserId());
-
-                IdentityService identityService = ProcessEngines.getDefaultProcessEngine().getIdentityService();
-                org.activiti.engine.identity.User activitiUser =
-                        identityService.createUserQuery().userId(userId).singleResult();
-                if (activitiUser == null) {
-                    activitiUser = identityService.newUser(userId);
-                    activitiUser.setEmail(portalUser.getEmailAddress());
-                    activitiUser.setFirstName(portalUser.getFirstName());
-                    activitiUser.setLastName(portalUser.getLastName());
-                    activitiUser.setPassword(String.valueOf(Math.random()));
-                } else {
-                    activitiUser.setEmail(portalUser.getEmailAddress());
-                    activitiUser.setFirstName(portalUser.getFirstName());
-                    activitiUser.setLastName(portalUser.getLastName());
-                    activitiUser.setPassword(String.valueOf(Math.random()));
-                }
-                identityService.saveUser(activitiUser);
-
-                List<com.liferay.portal.model.Group> userGroups = GroupLocalServiceUtil.getUserGroups(portalUser.getUserId());
-
-                List<Group> activitiGroups = identityService.createGroupQuery().groupMember(userId).list();
-                for (Group activitGroup : activitiGroups) {
-                    identityService.deleteMembership(userId, activitGroup.getId());
-                }
-                for (com.liferay.portal.model.Group portalGroup : userGroups) {
-                    String groupId = String.valueOf(portalGroup.getGroupId());
-                    if (identityService.createGroupQuery()
-                            .groupId(groupId).singleResult() == null) {
-                        Group activitiGroup = identityService.newGroup(groupId);
-                        activitiGroup.setName(portalGroup.getName());
-                        activitiGroup.setType("assignment");  //http://developer4life.blogspot.com/2012/02/activiti-authentication-and-identity.html
-                        identityService.saveGroup(activitiGroup);
-                    }
-                    identityService.createMembership(userId, groupId);
-                }
-                LoggedInUserImpl loggedInUser = new LoggedInUserImpl(activitiUser, "********");
-
-                if (PortalUtil.isOmniadmin(portalUser.getUserId())) {
-                    loggedInUser.setUser(true);
-                    loggedInUser.setAdmin(true);
-                }
-
-                List<Group> groups = identityService.createGroupQuery().groupMember(userId).list();
-                for (Group group : groups) {
-                    if (Constants.SECURITY_ROLE.equals(group.getType())) {
-                        loggedInUser.addSecurityRoleGroup(group);
-                        if (Constants.SECURITY_ROLE_USER.equals(group.getId())) {
-                            loggedInUser.setUser(true);
-                        }
-                        if (Constants.SECURITY_ROLE_ADMIN.equals(group.getId())) {
-                            loggedInUser.setAdmin(true);
-                        }
-                    } else {
-                        loggedInUser.addGroup(group);
-                    }
-                }
-                setUser(loggedInUser);
-                Authentication.setAuthenticatedUserId(userId);
-                identityService.setAuthenticatedUserId(userId);
-
                 viewManager.showTasksPage();
-//                getMainWindow().removeAllComponents();
-//                InboxPage c = new InboxPage();
-//                c.setSizeUndefined();
-//                c.setWidth(100, Sizeable.UNITS_PERCENTAGE);
-
-//                getMainWindow().addComponent(c);
             } else {
                 getMainWindow().removeAllComponents();
                 getMainWindow().addComponent(new Label("Please sign in")); //TODO i18n
@@ -143,6 +78,35 @@ public class ActivitiExplorerPortletApplication extends
             throw new RuntimeException(e);
         }
     }
+
+    public User bridgePortalUser(PortletRequest request) throws PortalException, SystemException {
+        User portalUser = PortalUtil.getUser(request);
+        if (portalUser != null) {
+            String userId = String.valueOf(portalUser.getUserId());
+
+            IdentityService identityService = ProcessEngines.getDefaultProcessEngine().getIdentityService();
+            org.activiti.engine.identity.User activitiUser =
+                    identityService.createUserQuery().userId(userId).singleResult();
+
+//            List<com.liferay.portal.model.Group> userGroups = GroupLocalServiceUtil.getUserGroups(portalUser.getUserId());
+
+            LoggedInUserImpl loggedInUser = new LoggedInUserImpl(activitiUser, "********");
+
+            if (PortalUtil.isOmniadmin(portalUser.getUserId())) {
+                loggedInUser.setUser(true);
+                loggedInUser.setAdmin(true);
+            } else {
+                loggedInUser.setUser(true);
+            }
+
+            setUser(loggedInUser);
+            Authentication.setAuthenticatedUserId(userId);
+            identityService.setAuthenticatedUserId(userId);
+
+        }
+        return portalUser;
+    }
+
 
     @Override
     public void setCurrentUriFragment(UriFragment fragment) {

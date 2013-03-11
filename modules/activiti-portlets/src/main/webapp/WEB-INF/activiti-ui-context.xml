@@ -56,7 +56,7 @@
   </bean>
   
   <!-- User cache usage depends on environment, hence the factory approach -->
-  <bean name="userCache" class="org.activiti.explorer.cache.UserCacheFactoryBean">
+  <bean name="userCache" class="org.activiti.portlets.explorer.spring.LiferayUserCacheFactoryBean">
     <property name="environment" value="${activiti.ui.environment}" />
   </bean>
   

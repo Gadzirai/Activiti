@@ -1,5 +1,8 @@
 package org.activiti.portlets.explorer.portlet;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.model.User;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.ApplicationPortlet2;
 import com.vaadin.terminal.gwt.server.PortletApplicationContext2;
@@ -16,6 +19,8 @@ import org.springframework.web.portlet.context.PortletRequestAttributes;
 
 import javax.portlet.*;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,6 +30,7 @@ import java.io.IOException;
  */
 public class ExplorerApplicationPortlet extends ApplicationPortlet2 {
 
+    private static final Logger LOGGER = Logger.getLogger(ExplorerApplicationPortlet.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -54,6 +60,7 @@ public class ExplorerApplicationPortlet extends ApplicationPortlet2 {
 
     @Override
     protected void handleRequest(PortletRequest request, PortletResponse response) throws PortletException, IOException {
+        LOGGER.finer("Handling portlet request");
         LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
         LocaleContextHolder.setLocaleContext( new SimpleLocaleContext(request.getLocale()), false);
 
@@ -61,18 +68,38 @@ public class ExplorerApplicationPortlet extends ApplicationPortlet2 {
         RequestAttributes previousRequestAttributes = RequestContextHolder.getRequestAttributes();
         PortletRequestAttributes requestAttributes = null;
         if (previousRequestAttributes == null || previousRequestAttributes.getClass().equals(PortletRequestAttributes.class)) {
+            LOGGER.finer("Setting request attributes for spring context");
             requestAttributes = new PortletRequestAttributes(request);
             RequestContextHolder.setRequestAttributes(requestAttributes, false);
         }
+
 
         try {
             PortletApplicationContext2 context = getApplicationContext(request.getPortletSession());
             Application application = context.getApplicationForWindowId(request.getWindowID());
             if (application instanceof ActivitiExplorerPortletApplication) {
-                ((ActivitiExplorerPortletApplication)application).setInCtx();
+                LOGGER.finer("Found ActivitiExplorerPortletApplication to be processed, setting it in Spring Context");
+                ActivitiExplorerPortletApplication explorerPortletApplication = (ActivitiExplorerPortletApplication) application;
+                try {
+                    User user = explorerPortletApplication.bridgePortalUser(request);
+                    if (user != null) {
+                        LOGGER.finer("Bridged portal user to Activiti: " + user.getLogin());
+                    } else {
+                        LOGGER.fine("No portal user to be bridged to Activiti!");
+                    }
+
+                } catch (PortalException e) {
+                    LOGGER.log(Level.SEVERE, "Failed to bridge portal user to Activiti: ", e);
+                    throw new PortletException(e);
+                } catch (SystemException e) {
+                    LOGGER.log(Level.SEVERE, "Failed to bridge portal user to Activiti: ", e);
+                    throw new PortletException(e);
+                }
+                explorerPortletApplication.setInCtx();
             }
             super.handleRequest(request, response);
         } finally {
+            LOGGER.finer("Done handling portlet request, unregistering contexts");
             LocaleContextHolder.setLocaleContext(previousLocaleContext, false);
             if (requestAttributes != null) {
                 RequestContextHolder.setRequestAttributes(previousRequestAttributes, false);
