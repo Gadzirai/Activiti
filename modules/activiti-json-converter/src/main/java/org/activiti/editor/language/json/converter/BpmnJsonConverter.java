@@ -53,12 +53,12 @@ public class BpmnJsonConverter implements EditorJsonConstants, StencilConstants,
   
   protected static final Logger LOGGER = LoggerFactory.getLogger(BpmnJsonConverter.class);
   
-  private ObjectMapper objectMapper = new ObjectMapper();
+  protected ObjectMapper objectMapper = new ObjectMapper();
   
-  private static Map<Class<? extends BaseElement>, Class<? extends BaseBpmnJsonConverter>> convertersToJsonMap = 
+  protected static Map<Class<? extends BaseElement>, Class<? extends BaseBpmnJsonConverter>> convertersToJsonMap = 
       new HashMap<Class<? extends BaseElement>, Class<? extends BaseBpmnJsonConverter>>();
   
-  private static Map<String, Class<? extends BaseBpmnJsonConverter>> convertersToBpmnMap = 
+  protected static Map<String, Class<? extends BaseBpmnJsonConverter>> convertersToBpmnMap = 
       new HashMap<String, Class<? extends BaseBpmnJsonConverter>>();
   
   static {
@@ -316,23 +316,19 @@ public class BpmnJsonConverter implements EditorJsonConstants, StencilConstants,
     // sequence flows are now all on root level
     Map<String, SubProcess> subShapesMap = new HashMap<String, SubProcess>();
     for (Process process : bpmnModel.getProcesses()) {
-      for (FlowElement flowElement : process.getFlowElements()) {
-        if (flowElement instanceof SubProcess) {
-          SubProcess subProcess = (SubProcess) flowElement;
-          fillSubShapes(subShapesMap, subProcess);
-        }
+      for (FlowElement flowElement : process.findFlowElementsOfType(SubProcess.class)) {
+        SubProcess subProcess = (SubProcess) flowElement;
+        fillSubShapes(subShapesMap, subProcess);
       }
       
       if (subShapesMap.size() > 0) {
         List<String> removeSubFlowsList = new ArrayList<String>();
-        for (FlowElement flowElement : process.getFlowElements()) {
-          if (flowElement instanceof SequenceFlow) {
-            SequenceFlow sequenceFlow = (SequenceFlow) flowElement;
-            if (subShapesMap.containsKey(sequenceFlow.getSourceRef())) {
-              SubProcess subProcess = subShapesMap.get(sequenceFlow.getSourceRef());
-              subProcess.addFlowElement(sequenceFlow);
-              removeSubFlowsList.add(sequenceFlow.getId());
-            }
+        for (FlowElement flowElement : process.findFlowElementsOfType(SequenceFlow.class)) {
+          SequenceFlow sequenceFlow = (SequenceFlow) flowElement;
+          if (subShapesMap.containsKey(sequenceFlow.getSourceRef())) {
+            SubProcess subProcess = subShapesMap.get(sequenceFlow.getSourceRef());
+            subProcess.addFlowElement(sequenceFlow);
+            removeSubFlowsList.add(sequenceFlow.getId());
           }
         }
         for (String flowId : removeSubFlowsList) {

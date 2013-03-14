@@ -13,6 +13,8 @@
 package org.activiti.engine.impl.persistence.entity;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.impl.context.Context;
@@ -37,14 +39,42 @@ public class IdentityLinkEntity implements Serializable, IdentityLink, Persisten
   
   protected String taskId;
   
+  protected String processInstanceId;
+  
   protected String processDefId;
   
   protected TaskEntity task;
   
+  protected ExecutionEntity processInstance;
+  
   protected ProcessDefinitionEntity processDef;
 
   public Object getPersistentState() {
-    return this.type;
+    Map<String, Object> persistentState = new  HashMap<String, Object>();
+    persistentState.put("id", this.id);
+    persistentState.put("type", this.type);
+    
+    if (this.userId != null) {
+      persistentState.put("userId", this.userId);
+    }
+    
+    if (this.groupId != null) {
+      persistentState.put("groupId", this.groupId);
+    }
+    
+    if (this.taskId != null) {
+      persistentState.put("taskId", this.taskId);
+    }
+    
+    if (this.processInstanceId != null) {
+      persistentState.put("processInstanceId", this.processInstanceId);
+    }
+    
+    if (this.processDefId != null) {
+      persistentState.put("processDefId", this.processDefId);
+    }
+    
+    return persistentState;
   }
   
   public static IdentityLinkEntity createAndInsert() {
@@ -109,6 +139,14 @@ public class IdentityLinkEntity implements Serializable, IdentityLink, Persisten
   void setTaskId(String taskId) {
     this.taskId = taskId;
   }
+  
+  public String getProcessInstanceId() {
+    return processInstanceId;
+  }
+  
+  public void setProcessInstanceId(String processInstanceId) {
+    this.processInstanceId = processInstanceId;
+  }
     
   public String getProcessDefId() {
     return processDefId;
@@ -132,13 +170,28 @@ public class IdentityLinkEntity implements Serializable, IdentityLink, Persisten
     this.task = task;
     this.taskId = task.getId();
   }
+  
+  public ExecutionEntity getProcessInstance() {
+    if ((processInstance == null) && (processInstanceId != null)) {
+      this.processInstance = Context
+        .getCommandContext()
+        .getExecutionEntityManager()
+        .findExecutionById(processInstanceId);
+    }
+    return processInstance;
+  }
+  
+  public void setProcessInstance(ExecutionEntity processInstance) {
+    this.processInstance = processInstance;
+    this.processInstanceId = processInstance.getId();
+  }
 
   public ProcessDefinitionEntity getProcessDef() {
     if ((processDef == null) && (processDefId != null)) {
       this.processDef = Context
               .getCommandContext()
               .getProcessDefinitionEntityManager()
-              .findLatestProcessDefinitionById(processDefId);
+              .findProcessDefinitionById(processDefId);
     }
     return processDef;
   }

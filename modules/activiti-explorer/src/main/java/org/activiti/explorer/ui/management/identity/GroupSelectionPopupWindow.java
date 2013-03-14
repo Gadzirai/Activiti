@@ -43,7 +43,7 @@ import com.vaadin.ui.themes.Reindeer;
 public class GroupSelectionPopupWindow extends PopupWindow {
   
   private static final long serialVersionUID = 1L;
-  protected IdentityService identityService;
+  protected transient IdentityService identityService;
   protected I18nManager i18nManager;
   protected String userId;
   protected Table groupTable;
@@ -76,7 +76,7 @@ public class GroupSelectionPopupWindow extends PopupWindow {
     addComponent(groupTable);
     
     GroupSelectionQuery query = new GroupSelectionQuery(identityService, userId);
-    LazyLoadingContainer container = new LazyLoadingContainer(query, 10);
+    LazyLoadingContainer container = new LazyLoadingContainer(query, 30);
     groupTable.setContainerDataSource(container);
     
     groupTable.addContainerProperty("id", String.class, null);

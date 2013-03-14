@@ -42,7 +42,7 @@ public class ProcessDefinitionPage extends AbstractTablePage {
   private static final long serialVersionUID = 1L;
   
   // Services
-  protected RepositoryService repositoryService = ProcessEngines.getDefaultProcessEngine().getRepositoryService();
+  protected transient RepositoryService repositoryService = ProcessEngines.getDefaultProcessEngine().getRepositoryService();
   
   // UI
   protected String processDefinitionId;
@@ -101,7 +101,7 @@ public class ProcessDefinitionPage extends AbstractTablePage {
     
     
     LazyLoadingQuery lazyLoadingQuery = new ProcessDefinitionListQuery(repositoryService, definitionFilter);
-    this.processDefinitionContainer = new LazyLoadingContainer(lazyLoadingQuery, 10);
+    this.processDefinitionContainer = new LazyLoadingContainer(lazyLoadingQuery, 30);
     processDefinitionTable.setContainerDataSource(processDefinitionContainer);
     
     // Listener to change right panel when clicked on a task

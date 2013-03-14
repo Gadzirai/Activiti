@@ -47,7 +47,7 @@ public class FormPropertiesForm extends VerticalLayout {
   private static final long serialVersionUID = -3197331726904715949L;
 
   // Services
-  protected FormService formService;
+  protected transient FormService formService;
   protected I18nManager i18nManager;
 
   // UI
@@ -153,6 +153,10 @@ public class FormPropertiesForm extends VerticalLayout {
         submitFormButton.setComponentError(null);
       }
     });
+  }
+  
+  public void hideCancelButton() {
+    cancelFormButton.setVisible(false);
   }
   
   protected void addEmptySpace(ComponentContainer container) {

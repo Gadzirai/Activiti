@@ -15,7 +15,6 @@ package org.activiti.engine.impl.cmd;
 import java.io.Serializable;
 import java.util.List;
 
-import org.activiti.engine.ActivitiException;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.interceptor.Command;
@@ -42,7 +41,7 @@ public class GetIdentityLinksForProcessDefinitionCmd implements Command<List<Ide
     ProcessDefinitionEntity processDefinition = Context
         .getCommandContext()
         .getProcessDefinitionEntityManager()
-        .findLatestProcessDefinitionById(processDefinitionId);
+        .findProcessDefinitionById(processDefinitionId);
       
     if (processDefinition == null) {
       throw new ActivitiObjectNotFoundException("Cannot find process definition with id " + processDefinitionId, ProcessDefinition.class);

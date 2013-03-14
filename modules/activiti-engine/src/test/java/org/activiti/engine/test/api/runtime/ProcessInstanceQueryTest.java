@@ -1224,7 +1224,7 @@ public class ProcessInstanceQueryTest extends PluggableActivitiTestCase {
   
   @Deployment(resources={
     "org/activiti/engine/test/api/oneTaskProcess.bpmn20.xml"})
-    public void testClashingValues() throws Exception {
+  public void testClashingValues() throws Exception {
       Map<String, Object> vars = new HashMap<String, Object>();
       vars.put("var", 1234L);
       
@@ -1291,6 +1291,5 @@ public class ProcessInstanceQueryTest extends PluggableActivitiTestCase {
     
     assertEquals(piCount, runtimeService.createNativeProcessInstanceQuery().sql("SELECT * FROM " + managementService.getTableName(ProcessInstance.class)).list().size());
     assertEquals(piCount, runtimeService.createNativeProcessInstanceQuery().sql("SELECT count(*) FROM " + managementService.getTableName(ProcessInstance.class)).count());
-  }  
-
+  }
 }

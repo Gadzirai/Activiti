@@ -50,6 +50,7 @@ create table ACT_HI_TASKINST (
     DELETE_REASON_ varchar(4000),
     PRIORITY_ integer,
     DUE_DATE_ timestamp,
+    FORM_KEY_ varchar(255),
     primary key (ID_)
 );
 
@@ -131,3 +132,5 @@ create index ACT_IDX_HI_ACT_INST_PROCINST on ACT_HI_ACTINST(PROC_INST_ID_, ACT_I
 alter table ACT_HI_PROCINST
     add constraint ACT_UNIQ_HI_BUS_KEY
     unique(PROC_DEF_ID_, BUSINESS_KEY_);
+    
+create index ACT_IDX_HI_ACT_INST_EXEC on ACT_HI_ACTINST(EXECUTION_ID_, ACT_ID_);    

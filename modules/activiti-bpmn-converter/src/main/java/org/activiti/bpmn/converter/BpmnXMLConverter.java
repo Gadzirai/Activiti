@@ -13,7 +13,10 @@
 package org.activiti.bpmn.converter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,10 +24,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stax.StAXSource;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -54,6 +60,7 @@ import org.activiti.bpmn.converter.parser.PotentialStarterParser;
 import org.activiti.bpmn.converter.parser.ProcessParser;
 import org.activiti.bpmn.converter.parser.SignalParser;
 import org.activiti.bpmn.converter.parser.SubProcessParser;
+import org.activiti.bpmn.converter.util.InputStreamProvider;
 import org.activiti.bpmn.exceptions.XMLException;
 import org.activiti.bpmn.model.Activity;
 import org.activiti.bpmn.model.Artifact;
@@ -70,23 +77,26 @@ import org.activiti.bpmn.model.SubProcess;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * @author Tijs Rademakers
+ * @author Joram Barrez
  */
 public class BpmnXMLConverter implements BpmnXMLConstants {
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(BpmnXMLConverter.class);
 	
-  private static final String BPMN_XSD = "org/activiti/impl/bpmn/parser/BPMN20.xsd";
+  protected static final String BPMN_XSD = "org/activiti/impl/bpmn/parser/BPMN20.xsd";
   
-	private static Map<String, Class<? extends BaseBpmnXMLConverter>> convertersToBpmnMap = 
+	protected static Map<String, Class<? extends BaseBpmnXMLConverter>> convertersToBpmnMap = 
 	    new HashMap<String, Class<? extends BaseBpmnXMLConverter>>();
-	private static Map<Class<? extends BaseElement>, Class<? extends BaseBpmnXMLConverter>> convertersToXMLMap = 
+	protected static Map<Class<? extends BaseElement>, Class<? extends BaseBpmnXMLConverter>> convertersToXMLMap = 
 	    new HashMap<Class<? extends BaseElement>, Class<? extends BaseBpmnXMLConverter>>();
-	private ClassLoader classloader;
-	private List<String> userTaskFormTypes;
-	private List<String> startEventFormTypes;
+	
+	protected ClassLoader classloader;
+	protected List<String> userTaskFormTypes;
+	protected List<String> startEventFormTypes;
 	
 	static {
 		// events
@@ -146,7 +156,21 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
     this.startEventFormTypes = startEventFormTypes;
   }
   
-  public void validateModel(XMLStreamReader xtr) throws Exception {
+  public void validateModel(InputStreamProvider inputStreamProvider) throws Exception {
+    Schema schema = createSchema();
+    
+    Validator validator = schema.newValidator();
+    validator.validate(new StreamSource(inputStreamProvider.getInputStream()));
+  }
+  
+  public void validateModel(XMLStreamReader xmlStreamReader) throws Exception {
+    Schema schema = createSchema();
+    
+    Validator validator = schema.newValidator();
+    validator.validate(new StAXSource(xmlStreamReader));
+  }
+
+  protected Schema createSchema() throws SAXException {
     SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     Schema schema = null;
     if (classloader != null) {
@@ -160,9 +184,62 @@ public class BpmnXMLConverter implements BpmnXMLConstants {
     if (schema == null) {
       throw new XMLException("BPMN XSD could not be found");
     }
-    
-    Validator validator = schema.newValidator();
-    validator.validate(new StAXSource(xtr));
+    return schema;
+  }
+  
+  public BpmnModel convertToBpmnModel(InputStreamProvider inputStreamProvider, boolean validateSchema, boolean enableSafeBpmnXml) {
+    XMLInputFactory xif = XMLInputFactory.newInstance();
+
+    if (xif.isPropertySupported(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES)) {
+      xif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false);
+    }
+
+    if (xif.isPropertySupported(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES)) {
+      xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+    }
+
+    if (xif.isPropertySupported(XMLInputFactory.SUPPORT_DTD)) {
+      xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    }
+
+    InputStreamReader in = null;
+    try {
+      in = new InputStreamReader(inputStreamProvider.getInputStream(), "UTF-8");
+      XMLStreamReader xtr = xif.createXMLStreamReader(in);
+  
+      try {
+        if (validateSchema) {
+          
+          if (!enableSafeBpmnXml) {
+            validateModel(inputStreamProvider);
+          } else {
+            validateModel(xtr);
+          }
+  
+          // The input stream is closed after schema validation
+          in = new InputStreamReader(inputStreamProvider.getInputStream(), "UTF-8");
+          xtr = xif.createXMLStreamReader(in);
+        }
+  
+      } catch (Exception e) {
+        throw new RuntimeException("Could not validate XML with BPMN 2.0 XSD", e);
+      }
+  
+      // XML conversion
+      return convertToBpmnModel(xtr);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException("The bpmn 2.0 xml is not UTF8 encoded", e);
+    } catch (XMLStreamException e) {
+      throw new RuntimeException("Error while reading the BPMN 2.0 XML", e);
+    } finally {
+      if (in != null) {
+        try {
+          in.close();
+        } catch (IOException e) {
+          LOGGER.info("Problem closing BPMN input stream", e);
+        }
+      }
+    }
   }
 
 	public BpmnModel convertToBpmnModel(XMLStreamReader xtr) { 

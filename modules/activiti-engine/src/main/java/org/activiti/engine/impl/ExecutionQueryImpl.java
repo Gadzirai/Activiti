@@ -44,7 +44,10 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
   protected String superProcessInstanceId;
   protected String subProcessInstanceId;
   protected SuspensionState suspensionState;
-  private String businessKey;
+  protected String businessKey;
+  protected boolean isActive;
+  protected String involvedUser;
+  
   
   public ExecutionQueryImpl() {
   }
@@ -103,6 +106,10 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
   
   public ExecutionQueryImpl activityId(String activityId) {
     this.activityId = activityId;
+    
+    if (activityId != null) {
+      isActive =  true;
+    }
     return this;
   }
   
@@ -214,4 +221,14 @@ public class ExecutionQueryImpl extends AbstractVariableQueryImpl<ExecutionQuery
   public void setEventSubscriptions(List<EventSubscriptionQueryValue> eventSubscriptions) {
     this.eventSubscriptions = eventSubscriptions;
   }
+  public boolean isActive() {
+    return isActive;
+  }
+  public String getInvolvedUser() {
+    return involvedUser;
+  }
+  public void setInvolvedUser(String involvedUser) {
+    this.involvedUser = involvedUser;
+  }
+  
 }

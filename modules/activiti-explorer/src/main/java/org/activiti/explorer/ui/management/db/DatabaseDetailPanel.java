@@ -39,7 +39,7 @@ public class DatabaseDetailPanel extends DetailPanel {
   
   private static final long serialVersionUID = 1L;
   
-  protected ManagementService managementService;
+  protected transient ManagementService managementService;
   protected I18nManager i18nManager;
   
   protected String tableName;
@@ -85,7 +85,7 @@ public class DatabaseDetailPanel extends DetailPanel {
   
   protected void addTableData() {
     LazyLoadingQuery lazyLoadingQuery = new TableDataQuery(tableName, managementService);
-    LazyLoadingContainer lazyLoadingContainer = new LazyLoadingContainer(lazyLoadingQuery, 10);
+    LazyLoadingContainer lazyLoadingContainer = new LazyLoadingContainer(lazyLoadingQuery, 30);
     
     if (lazyLoadingContainer.size() > 0) {
       

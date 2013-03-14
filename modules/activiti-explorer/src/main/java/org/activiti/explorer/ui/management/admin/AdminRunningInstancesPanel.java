@@ -12,6 +12,7 @@
  */
 package org.activiti.explorer.ui.management.admin;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,10 +60,10 @@ public class AdminRunningInstancesPanel extends DetailPanel {
 
   private static final long serialVersionUID = 1L;
   
-  protected HistoryService historyService;
-  protected RepositoryService repositoryService;
-  protected RuntimeService runtimeService;
-  protected IdentityService identityService;
+  protected transient HistoryService historyService;
+  protected transient RepositoryService repositoryService;
+  protected transient RuntimeService runtimeService;
+  protected transient IdentityService identityService;
   protected I18nManager i18nManager;
   protected VariableRendererManager variableRendererManager;
 
@@ -153,6 +154,10 @@ public class AdminRunningInstancesPanel extends DetailPanel {
 	      
 	      } else {
 	      	ProcessDefinition definition = repositoryService.createProcessDefinitionQuery().processDefinitionId(processDefinitionId).singleResult();
+	      	if (definition == null) {
+	      	  // this process has a missing definition - skip
+	      	  continue;
+	      	}
 	      	managementDefinition = new ManagementProcessDefinition();
 	      	managementDefinition.processDefinition = definition;
 	      	managementDefinition.runningInstances = new ArrayList<HistoricProcessInstance>();
@@ -273,7 +278,7 @@ public class AdminRunningInstancesPanel extends DetailPanel {
   	}
   }
   
-  class ManagementProcessDefinition {
+  static class ManagementProcessDefinition implements Serializable {
   	public ProcessDefinition processDefinition;
   	public List<HistoricProcessInstance> runningInstances;
   }

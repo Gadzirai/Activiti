@@ -13,7 +13,6 @@
 
 package org.activiti.explorer;
 
-import org.activiti.engine.repository.Model;
 import org.activiti.workflow.simple.definition.WorkflowDefinition;
 
 import com.vaadin.ui.Window;
@@ -86,6 +85,16 @@ public interface ViewManager {
   
   void showSimpleTableProcessEditor(String modelId, WorkflowDefinition workflowDefinition);
   
+  // Reports
+  
+  void showRunReportPage();
+  
+  void showRunReportPage(String reportId);
+  
+  void showSavedReportPage();
+  
+  void showSavedReportPage(String reportId);
+  
   // Management
   
   void showDatabasePage();
@@ -127,5 +136,5 @@ public interface ViewManager {
   // Profile
   
   void showProfilePopup(String userId);
-  
+
 }

@@ -10,13 +10,16 @@
     <groupId>org.activiti</groupId>
     <artifactId>activiti-root</artifactId>
     <relativePath>../..</relativePath>
-    <version>5.12-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
   
   <properties>
     <activiti.artifact>
       org.activiti.bpmn.converter
     </activiti.artifact>
+    <activiti.osgi.export.additional>
+      org.activiti.bpmn.constants,org.activiti.bpmn.util
+    </activiti.osgi.export.additional>
   </properties>
 
   <build>

@@ -13,6 +13,7 @@
 
 package org.activiti.explorer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +42,9 @@ import org.activiti.explorer.ui.process.ProcessDefinitionPage;
 import org.activiti.explorer.ui.process.ProcessMenuBar;
 import org.activiti.explorer.ui.process.simple.editor.SimpleTableEditor;
 import org.activiti.explorer.ui.profile.ProfilePopupWindow;
+import org.activiti.explorer.ui.reports.ReportsMenuBar;
+import org.activiti.explorer.ui.reports.RunReportsPage;
+import org.activiti.explorer.ui.reports.SavedReportsPage;
 import org.activiti.explorer.ui.task.ArchivedPage;
 import org.activiti.explorer.ui.task.InboxPage;
 import org.activiti.explorer.ui.task.InvolvedPage;
@@ -56,16 +60,18 @@ import com.vaadin.ui.Window;
 /**
  * @author Joram Barrez
  */
-public class DefaultViewManager implements ViewManager {
+public class DefaultViewManager implements ViewManager, Serializable {
   
+  private static final long serialVersionUID = -1712344958488358861L;
+
   protected AbstractPage currentPage;
   
   @Autowired
   protected MainWindow mainWindow;
 
-  protected TaskService taskService;
-  protected HistoryService historyService;
-  protected IdentityService identityService;
+  protected transient TaskService taskService;
+  protected transient HistoryService historyService;
+  protected transient IdentityService identityService;
   
   public DefaultViewManager() {
     this.taskService = ProcessEngines.getDefaultProcessEngine().getTaskService();
@@ -226,6 +232,26 @@ public class DefaultViewManager implements ViewManager {
   
   public void showSimpleTableProcessEditor(String modelId, WorkflowDefinition workflowDefinition) {
     switchView(new SimpleTableEditor(modelId, workflowDefinition), ViewManager.MAIN_NAVIGATION_PROCESS, null);
+  }
+  
+  // Reporting
+  
+  public void showRunReportPage() {
+    switchView(new RunReportsPage(), ViewManager.MAIN_NAVIGATION_REPORT, ReportsMenuBar.ENTRY_RUN_REPORTS);
+  }
+  
+  public void showRunReportPage(String reportId) {
+    switchView(new RunReportsPage(reportId), ViewManager.MAIN_NAVIGATION_REPORT, ReportsMenuBar.ENTRY_RUN_REPORTS);
+  }
+
+
+  public void showSavedReportPage() {
+    switchView(new SavedReportsPage(), ViewManager.MAIN_NAVIGATION_REPORT, ReportsMenuBar.ENTRY_SAVED_REPORTS);
+  }
+  
+  @Override
+  public void showSavedReportPage(String reportId) {
+    switchView(new SavedReportsPage(reportId), ViewManager.MAIN_NAVIGATION_REPORT, ReportsMenuBar.ENTRY_SAVED_REPORTS);
   }
   
   // Management

@@ -59,8 +59,8 @@ public class UserDetailPanel extends DetailPanel implements MemberShipChangeList
 
   private static final long serialVersionUID = 1L;
   
+  protected transient IdentityService identityService;
   protected I18nManager i18nManager;
-  protected IdentityService identityService;
   
   protected UserPage userPage;
   protected User user;
@@ -389,7 +389,7 @@ public class UserDetailPanel extends DetailPanel implements MemberShipChangeList
       groupTable.setWidth(100, UNITS_PERCENTAGE);
       groupLayout.addComponent(groupTable);
       
-      groupContainer = new LazyLoadingContainer(groupsForUserQuery, 10);
+      groupContainer = new LazyLoadingContainer(groupsForUserQuery, 30);
       groupTable.setContainerDataSource(groupContainer);
       
       groupTable.addContainerProperty("id", Button.class, null);
