@@ -2,7 +2,15 @@
 
 <liferay-portlet-app>
     <portlet>
-        <portlet-name>ActivitiExplorerPortlet</portlet-name>
+        <portlet-name>ActivitiTasksPortlet</portlet-name>
+        <instanceable>false</instanceable>
+        <ajaxable>false</ajaxable>
+    </portlet>
+    <portlet>
+        <portlet-name>ActivitiAdminPortlet</portlet-name>
+        <control-panel-entry-category>portal</control-panel-entry-category>
+        <control-panel-entry-weight>100</control-panel-entry-weight>
+        <instanceable>false</instanceable>
         <instanceable>false</instanceable>
         <ajaxable>false</ajaxable>
     </portlet>

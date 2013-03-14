@@ -2,6 +2,9 @@
 
 <display>
 	<category name="Activiti">
-		<portlet id="ActivitiExplorerPortlet"/>
+		<portlet id="ActivitiTasksPortlet"/>
 	</category>
+    <category name="category.hidden">
+        <portlet id="ActivitiAdminPortlet"/>
+    </category>
 </display>

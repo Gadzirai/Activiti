@@ -1,25 +1,16 @@
-package org.activiti.portlets.explorer.spring;
+package org.activiti.portlets.explorer.interop.liferay;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.search.Hits;
-import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.User;
-import org.activiti.explorer.Environments;
-import org.activiti.explorer.cache.TrieBasedUserCache;
 import org.activiti.explorer.cache.UserCache;
 import org.activiti.explorer.cache.UserCacheFactoryBean;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**

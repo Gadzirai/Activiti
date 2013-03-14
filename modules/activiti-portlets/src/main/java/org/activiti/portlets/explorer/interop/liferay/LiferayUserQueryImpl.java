@@ -1,16 +1,8 @@
-package org.activiti.portlets.explorer.spring;
+package org.activiti.portlets.explorer.interop.liferay;
 
 import com.liferay.portal.kernel.dao.orm.*;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.UserGroup;
-import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.UserGroupLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portal.service.UserServiceUtil;
-import com.liferay.portal.util.PortalUtil;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.identity.UserQuery;
 

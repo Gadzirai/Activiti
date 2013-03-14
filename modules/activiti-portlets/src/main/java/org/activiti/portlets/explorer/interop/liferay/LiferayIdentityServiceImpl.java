@@ -1,4 +1,4 @@
-package org.activiti.portlets.explorer.spring;
+package org.activiti.portlets.explorer.interop.liferay;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.*;

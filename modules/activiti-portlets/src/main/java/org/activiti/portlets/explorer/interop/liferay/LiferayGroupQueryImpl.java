@@ -1,12 +1,10 @@
-package org.activiti.portlets.explorer.spring;
+package org.activiti.portlets.explorer.interop.liferay;
 
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.UserLocalServiceUtil;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.GroupQuery;
 

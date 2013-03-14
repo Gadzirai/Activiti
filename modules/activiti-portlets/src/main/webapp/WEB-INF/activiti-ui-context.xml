@@ -56,7 +56,7 @@
   </bean>
   
   <!-- User cache usage depends on environment, hence the factory approach -->
-  <bean name="userCache" class="org.activiti.portlets.explorer.spring.LiferayUserCacheFactoryBean">
+  <bean name="userCache" class="org.activiti.portlets.explorer.interop.liferay.LiferayUserCacheFactoryBean">
     <property name="environment" value="${activiti.ui.environment}" />
   </bean>
   
@@ -71,7 +71,7 @@
     <property name="i18nManager" ref="i18nManager" />
   </bean>
   
-  <bean name="explorerApp" class="org.activiti.portlets.explorer.application.ActivitiExplorerPortletApplication" scope="session">
+  <bean name="tasksApp" class="org.activiti.portlets.explorer.application.ActivitiTasksPortletApplication" scope="session">
     <property name="environment" value="${activiti.ui.environment}" />
     <property name="useJavascriptDiagram" value="${activiti.ui.jsdiagram}" />
     <property name="userCache" ref="userCache" />
@@ -86,7 +86,23 @@
     <property name="workflowDefinitionConversionFactory" ref="workflowDefinitionConversionFactory" />
     <property name="loginHandler" ref="activitiLoginHandler" />
   </bean>
-  
+
+  <bean name="adminApp" class="org.activiti.portlets.explorer.application.ActivitiAdminPortletApplication" scope="session">
+    <property name="environment" value="${activiti.ui.environment}" />
+    <property name="useJavascriptDiagram" value="${activiti.ui.jsdiagram}" />
+    <property name="userCache" ref="userCache" />
+    <property name="i18nManager" ref="i18nManager" />
+    <property name="viewManager" ref="viewManager" />
+    <property name="notificationManager" ref="notificationManager" />
+    <property name="attachmentRendererManager" ref="attachmentRendererManager" />
+    <property name="formPropertyRendererManager" ref="formPropertyRendererManager" />
+    <property name="variableRendererManager" ref="variableRendererManager" />
+    <property name="applicationMainWindow" ref="mainWindow" />
+    <property name="componentFactories" ref="componentFactories" />
+    <property name="workflowDefinitionConversionFactory" ref="workflowDefinitionConversionFactory" />
+    <property name="loginHandler" ref="activitiLoginHandler" />
+  </bean>
+
   <bean name="i18nManager" class="org.activiti.explorer.I18nManager" scope="session">
     <property name="messageSource">
 	  <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">

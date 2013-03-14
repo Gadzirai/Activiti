@@ -27,7 +27,7 @@
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
-  <bean id="processEngineConfiguration" class="org.activiti.portlets.explorer.spring.SpringPortletProcessEngineConfigurationImpl">
+  <bean id="processEngineConfiguration" class="org.activiti.portlets.explorer.interop.liferay.SpringPortletProcessEngineConfigurationImpl">
   	<property name="dataSource" ref="dataSource" />
   	<property name="transactionManager" ref="transactionManager" />
   	<property name="databaseSchemaUpdate" value="true" />

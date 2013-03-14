@@ -1,6 +1,5 @@
-package org.activiti.portlets.explorer.spring;
+package org.activiti.portlets.explorer.interop.liferay;
 
-import org.activiti.engine.impl.IdentityServiceImpl;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 
 /**

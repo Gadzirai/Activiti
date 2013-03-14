@@ -7,7 +7,7 @@ import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.ApplicationPortlet2;
 import com.vaadin.terminal.gwt.server.PortletApplicationContext2;
 import org.activiti.explorer.ExplorerApp;
-import org.activiti.portlets.explorer.application.ActivitiExplorerPortletApplication;
+import org.activiti.portlets.explorer.application.ActivitiGenericPortletApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -28,9 +28,9 @@ import java.util.logging.Logger;
  * @author tomek@lipski.net.pl
  *         Date: 2/23/13 4:06 PM
  */
-public class ExplorerApplicationPortlet extends ApplicationPortlet2 {
+public class ActivitiApplicationPortlet extends ApplicationPortlet2 {
 
-    private static final Logger LOGGER = Logger.getLogger(ExplorerApplicationPortlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ActivitiApplicationPortlet.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -44,18 +44,12 @@ public class ExplorerApplicationPortlet extends ApplicationPortlet2 {
     }
 
     @Override
-    protected Class<? extends Application> getApplicationClass() {
-        return ActivitiExplorerPortletApplication.class;
-    }
-
-
-    @Override
     protected Application getNewApplication(PortletRequest request) {
         if (applicationContext == null) {
             PortletContext portletContext = getPortletContext();
             applicationContext = PortletApplicationContextUtils.getWebApplicationContext(getPortletContext());
         }
-        return  applicationContext.getBean(ExplorerApp.class);
+        return  applicationContext.getBean(getApplicationClass());
     }
 
     @Override
@@ -77,9 +71,9 @@ public class ExplorerApplicationPortlet extends ApplicationPortlet2 {
         try {
             PortletApplicationContext2 context = getApplicationContext(request.getPortletSession());
             Application application = context.getApplicationForWindowId(request.getWindowID());
-            if (application instanceof ActivitiExplorerPortletApplication) {
-                LOGGER.finer("Found ActivitiExplorerPortletApplication to be processed, setting it in Spring Context");
-                ActivitiExplorerPortletApplication explorerPortletApplication = (ActivitiExplorerPortletApplication) application;
+            if (application instanceof ActivitiGenericPortletApplication) {
+                LOGGER.finer("Found ActivitiGenericPortletApplication to be processed, setting it in Spring Context");
+                ActivitiGenericPortletApplication explorerPortletApplication = (ActivitiGenericPortletApplication) application;
                 try {
                     User user = explorerPortletApplication.bridgePortalUser(request);
                     if (user != null) {
@@ -107,52 +101,4 @@ public class ExplorerApplicationPortlet extends ApplicationPortlet2 {
             }
         }
     }
-//    @Override
-//    protected void writeAjaxPageHtmlVaadinScripts(Window window, String themeName, Application application, BufferedWriter page, String appUrl, String themeUri,
-//                                                  String appId, HttpServletRequest request) throws ServletException, IOException {
-//        super.writeAjaxPageHtmlVaadinScripts(window, themeName, application, page, appUrl, themeUri, appId, request);
-//
-//        // Add static JS files
-//        String scrollJs = themeUri + "/js/vscrollarea.js";
-//        page.write("<script type=\"text/javascript\" src=\"" + scrollJs + "\" />");
-//
-//        String browserDependentCss = "<script type=\"text/javascript\">//<![CDATA[" +
-//                "var mobi = ['opera', 'iemobile', 'webos', 'android', 'blackberry', 'ipad', 'safari'];" +
-//                "var midp = ['blackberry', 'symbian'];" +
-//                "var ua = navigator.userAgent.toLowerCase();" +
-//                "if ((ua.indexOf('midp') != -1) || (ua.indexOf('mobi') != -1) || ((ua.indexOf('ppc') != -1) && (ua.indexOf('mac') == -1)) || (ua.indexOf('webos') != -1)) {" +
-//                "  document.write('<link rel=\"stylesheet\" href=\"" + themeUri + "/allmobile.css\" type=\"text/css\" media=\"all\"/>');" +
-//                "  if (ua.indexOf('midp') != -1) {" +
-//                "    for (var i = 0; i < midp.length; i++) {" +
-//                "      if (ua.indexOf(midp[i]) != -1) {" +
-//                "        document.write('<link rel=\"stylesheet\" href=\"" + themeUri + "' + midp[i] + '.css\" type=\"text/css\"/>');" +
-//                "      }" +
-//                "    }" +
-//                "  }" +
-//                "   else {" +
-//                "     if ((ua.indexOf('mobi') != -1) || (ua.indexOf('ppc') != -1) || (ua.indexOf('webos') != -1)) {" +
-//                "       for (var i = 0; i < mobi.length; i++) {" +
-//                "         if (ua.indexOf(mobi[i]) != -1) {" +
-//                "           if ((mobi[i].indexOf('blackberry') != -1) && (ua.indexOf('6.0') != -1)) {" +
-//                "             document.write('<link rel=\"stylesheet\" href=\"" + themeUri + "' + mobi[i] + '6.0.css\" type=\"text/css\"/>');" +
-//                "           }" +
-//                "           else {" +
-//                "             document.write('<link rel=\"stylesheet\" href=\"" + themeUri + "' + mobi[i] + '.css\" type=\"text/css\"/>');" +
-//                "           }" +
-//                "          break;" +
-//                "         }" +
-//                "       }" +
-//                "     }" +
-//                "   }" +
-//                " }" +
-//                "if ((navigator.userAgent.indexOf('iPhone') != -1) || (navigator.userAgent.indexOf('iPad') != -1)) {" +
-//                " document.write('<meta name=\"viewport\" content=\"width=device-width\" />');" +
-//                "}" +
-//                "  //]]>" +
-//                "</script>" +
-//                "<!--[if lt IE 7]><link rel=\"stylesheet\" type=\"text/css\" href=\"" + themeUri + "/lt7.css\" /><![endif]-->";
-//
-//        page.write(browserDependentCss);
-//    }
-
 }
