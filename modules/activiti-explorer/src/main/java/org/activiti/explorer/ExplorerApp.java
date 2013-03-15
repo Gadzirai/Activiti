@@ -36,7 +36,8 @@ import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 /**
  * @author Joram Barrez
  */
-public class ExplorerApp extends Application implements HttpServletRequestListener {
+public class ExplorerApp extends
+        Application implements HttpServletRequestListener {
   
   private static final long serialVersionUID = -1L;
 
@@ -237,6 +238,9 @@ public class ExplorerApp extends Application implements HttpServletRequestListen
     
     if (exception == null) {
       exception = event.getThrowable().getCause();
+    }
+    if (exception == null) {
+        exception = event.getThrowable();
     }
     notificationManager.showErrorNotification(Messages.UNCAUGHT_EXCEPTION, exception.getMessage());
   }
