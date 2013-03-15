@@ -7,6 +7,7 @@ import org.activiti.engine.identity.User;
 import org.activiti.engine.identity.UserQuery;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -126,6 +127,7 @@ public class LiferayUserQueryImpl implements UserQuery {
         try {
             return UserLocalServiceUtil.dynamicQueryCount(buildDynamicQuery());
         } catch (SystemException e) {
+            LOGGER.log(Level.SEVERE, this.toString(), e);
             throw new RuntimeException(e);
         }
     }
@@ -162,6 +164,7 @@ public class LiferayUserQueryImpl implements UserQuery {
 
             return res;
         } catch (SystemException e) {
+            LOGGER.log(Level.SEVERE, this.toString(), e);
             throw new RuntimeException(e);
         }
     }
@@ -201,7 +204,8 @@ public class LiferayUserQueryImpl implements UserQuery {
                 userIds.add(user.getUserId());
             }
 
-            dq.add(PropertyFactoryUtil.forName("userId").in(userIds));
+            if (!userIds.isEmpty())
+                dq.add(PropertyFactoryUtil.forName("userId").in(userIds));
         }
         if (orderBy != null) {
             Property orderByProperty = PropertyFactoryUtil.forName(orderBy);

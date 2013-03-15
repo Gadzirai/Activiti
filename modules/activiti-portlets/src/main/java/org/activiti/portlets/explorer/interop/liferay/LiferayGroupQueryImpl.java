@@ -3,6 +3,7 @@ package org.activiti.portlets.explorer.interop.liferay;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import org.activiti.engine.identity.Group;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -70,7 +72,7 @@ public class LiferayGroupQueryImpl implements GroupQuery {
 
     @Override
     public GroupQuery orderByGroupName() {
-        orderBy = "groupName";
+        orderBy = "name";
         return this;
     }
 
@@ -97,7 +99,8 @@ public class LiferayGroupQueryImpl implements GroupQuery {
     public long count() {
         try {
             return GroupLocalServiceUtil.dynamicQueryCount(buildDynamicQuery());
-        } catch (SystemException e) {
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, toString(), e);
             throw new RuntimeException(e);
         }
     }
@@ -129,56 +132,54 @@ public class LiferayGroupQueryImpl implements GroupQuery {
                 results.add(new LiferayGroupImpl(portalGroup));
             }
             return results;
-        } catch (SystemException e) {
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, toString(), e);
             throw new RuntimeException(e);
         }
 
     }
 
-    private DynamicQuery buildDynamicQuery() {
+    private DynamicQuery buildDynamicQuery() throws SystemException, PortalException {
 
-        try {
-            LOGGER.fine("Searching for groups: " + this);
-            DynamicQuery dq = GroupLocalServiceUtil.dynamicQuery();
-            if (groupId != null) {
-                dq.add(PropertyFactoryUtil.forName("name").eq(groupId));
-            }
-
-
-            if (groupName != null) {
-                dq.add(PropertyFactoryUtil.forName("description").like(
-                        "%" + groupName.replace("\\", "\\\\").replace("%", "\\%") + "%"));
-            }
-            if (groupNameLike != null) {
-                dq.add(PropertyFactoryUtil.forName("description").like(groupNameLike));
-            }
-            if (groupType != null) { //TODO
-    //            dq.add(PropertyFactoryUtil.forName("lastName").like(
-    //                    "%" + userLastName.replace("\\", "\\\\").replace("%", "\\%") + "%"));
-            }
-            if (groupMember != null) {
-                Collection groupIds = new HashSet<String>();
-                for (com.liferay.portal.model.Group grp : GroupLocalServiceUtil
-                        .getUserGroups(Long.parseLong(groupMember))) {
-                    groupIds.add(grp.getName());
-                }
-
-                dq.add(PropertyFactoryUtil.forName("name").in(groupIds));
-
-            }
-            if (orderBy != null) {
-                Property orderByProperty = PropertyFactoryUtil.forName(orderBy);
-                if (asc) {
-                    dq.addOrder(orderByProperty.asc());
-                } else {
-                    dq.addOrder(orderByProperty.desc());
-                }
-            }
-            LOGGER.fine(this + " Query: " + dq);
-            return dq;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        LOGGER.fine("Searching for groups: " + this);
+        DynamicQuery dq = GroupLocalServiceUtil.dynamicQuery();
+        if (groupId != null) {
+            dq.add(PropertyFactoryUtil.forName("name").eq(groupId));
         }
+
+
+        if (groupName != null) {
+            dq.add(PropertyFactoryUtil.forName("description").like(
+                    "%" + groupName.replace("\\", "\\\\").replace("%", "\\%") + "%"));
+        }
+        if (groupNameLike != null) {
+            dq.add(PropertyFactoryUtil.forName("description").like(groupNameLike));
+        }
+        if (groupType != null) { //TODO
+//            dq.add(PropertyFactoryUtil.forName("lastName").like(
+//                    "%" + userLastName.replace("\\", "\\\\").replace("%", "\\%") + "%"));
+        }
+        if (groupMember != null) {
+            Collection groupIds = new HashSet<Long>();
+            for (com.liferay.portal.model.Group grp : GroupLocalServiceUtil
+                    .getUserGroups(Long.parseLong(groupMember))) {
+                groupIds.add(grp.getGroupId());
+            }
+
+            if (!groupIds.isEmpty())
+                dq.add(PropertyFactoryUtil.forName("groupId").in(groupIds));
+
+        }
+        if (orderBy != null) {
+            Property orderByProperty = PropertyFactoryUtil.forName(orderBy);
+            if (asc) {
+                dq.addOrder(orderByProperty.asc());
+            } else {
+                dq.addOrder(orderByProperty.desc());
+            }
+        }
+        LOGGER.fine(this + " Query: " + dq);
+        return dq;
     }
 
     @Override
