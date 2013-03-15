@@ -8,7 +8,17 @@
        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
        
   <!-- This Spring config file is NOT used in Alfresco, as the Activiti engine is wired in a different way there -->
-       
+
+<bean id="demoDataGenerator" class="org.activiti.explorer.demo.DemoDataGenerator" init-method="init">
+    <property name="processEngine" ref="processEngine" />
+
+    <!-- Set following properties to false if certain demo data is not wanted -->
+    <property name="createDemoUsersAndGroups" value="false" /> <!-- we use Liferay to manage groups and users -->
+    <property name="createDemoProcessDefinitions" value="true" />
+    <property name="createDemoModels" value="true" />
+    <property name="generateReportData" value="true" />
+</bean>
+
   <bean id="dbProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="location" value="classpath:db.properties" />
     <!-- Allow other PropertyPlaceholderConfigurer to run as well -->
@@ -34,7 +44,9 @@
   	<property name="jobExecutorActivate" value="true" />
     <property name="customFormTypes">
       <list>
-        <bean class="org.activiti.explorer.form.UserFormType"/>   
+        <bean class="org.activiti.explorer.form.UserFormType"/>
+        <bean class="org.activiti.explorer.form.ProcessDefinitionFormType"/>
+        <bean class="org.activiti.explorer.form.MonthFormType"/>
       </list>
     </property>
   </bean>

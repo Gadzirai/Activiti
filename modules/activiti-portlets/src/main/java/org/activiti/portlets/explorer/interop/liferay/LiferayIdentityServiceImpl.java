@@ -2,10 +2,8 @@ package org.activiti.portlets.explorer.interop.liferay;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.*;
-import org.activiti.engine.impl.identity.Account;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,15 +38,15 @@ public class LiferayIdentityServiceImpl implements IdentityService {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    public List<String> getUserAccountNames(String userId) { //TODO
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+//    @Override
+//    public List<String> getUserAccountNames(String userId) { //TODO
+//        return null;  //To change body of implemented methods use File | Settings | File Templates.
+//    }
 
-    @Override
-    public Account getUserAccount(String userId, String userPassword, String accountName) { //TODO
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+//    @Override
+//    public Account getUserAccount(String userId, String userPassword, String accountName) { //TODO
+//        return null;  //To change body of implemented methods use File | Settings | File Templates.
+//    }
 
 
     @Override
@@ -119,14 +117,14 @@ public class LiferayIdentityServiceImpl implements IdentityService {
         throw new IllegalArgumentException("Please use Liferay's user management API to do that.");
     }
 
-    @Override
-    public void setUserAccount(String userId, String userPassword, String accountName, String accountUsername, String accountPassword, Map<String, String> accountDetails) {
-        throw new IllegalArgumentException("Please use Liferay's user management API to do that.");
-    }
-
-
-    @Override
-    public void deleteUserAccount(String userId, String accountName) {
-        throw new IllegalArgumentException("Please use Liferay's user management API to do that.");
-    }
+//    @Override
+//    public void setUserAccount(String userId, String userPassword, String accountName, String accountUsername, String accountPassword, Map<String, String> accountDetails) {
+//        throw new IllegalArgumentException("Please use Liferay's user management API to do that.");
+//    }
+//
+//
+//    @Override
+//    public void deleteUserAccount(String userId, String accountName) {
+//        throw new IllegalArgumentException("Please use Liferay's user management API to do that.");
+//    }
 }

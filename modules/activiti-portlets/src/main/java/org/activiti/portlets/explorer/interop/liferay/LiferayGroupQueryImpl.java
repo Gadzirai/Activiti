@@ -120,7 +120,8 @@ public class LiferayGroupQueryImpl implements GroupQuery {
     @Override
     public List<Group> listPage(int firstResult, int maxResults) {
         try {
-            List<com.liferay.portal.model.Group> list = GroupLocalServiceUtil.dynamicQuery(buildDynamicQuery(), firstResult, maxResults);
+            List<com.liferay.portal.model.Group> list =
+                    GroupLocalServiceUtil.dynamicQuery(buildDynamicQuery(), firstResult, maxResults);
             LOGGER.fine(this + " found " + list.size() + " groups");
             List<Group> results = new ArrayList<Group>(list.size());
             for (com.liferay.portal.model.Group portalGroup : list) {
@@ -140,28 +141,29 @@ public class LiferayGroupQueryImpl implements GroupQuery {
             LOGGER.fine("Searching for groups: " + this);
             DynamicQuery dq = GroupLocalServiceUtil.dynamicQuery();
             if (groupId != null) {
-                dq.add(PropertyFactoryUtil.forName("groupId").eq(Long.parseLong(groupId)));
+                dq.add(PropertyFactoryUtil.forName("name").eq(groupId));
             }
 
 
             if (groupName != null) {
-                dq.add(PropertyFactoryUtil.forName("name").like(
+                dq.add(PropertyFactoryUtil.forName("description").like(
                         "%" + groupName.replace("\\", "\\\\").replace("%", "\\%") + "%"));
             }
             if (groupNameLike != null) {
-                dq.add(PropertyFactoryUtil.forName("name").like(groupNameLike));
+                dq.add(PropertyFactoryUtil.forName("description").like(groupNameLike));
             }
             if (groupType != null) { //TODO
     //            dq.add(PropertyFactoryUtil.forName("lastName").like(
     //                    "%" + userLastName.replace("\\", "\\\\").replace("%", "\\%") + "%"));
             }
             if (groupMember != null) {
-                Collection groupIds = new HashSet<Long>();
-                for (com.liferay.portal.model.Group grp : GroupLocalServiceUtil.getUserGroups(Long.parseLong(groupMember))) {
-                    groupIds.add(grp.getGroupId());
+                Collection groupIds = new HashSet<String>();
+                for (com.liferay.portal.model.Group grp : GroupLocalServiceUtil
+                        .getUserGroups(Long.parseLong(groupMember))) {
+                    groupIds.add(grp.getName());
                 }
 
-                dq.add(PropertyFactoryUtil.forName("groupId").in(groupIds));
+                dq.add(PropertyFactoryUtil.forName("name").in(groupIds));
 
             }
             if (orderBy != null) {

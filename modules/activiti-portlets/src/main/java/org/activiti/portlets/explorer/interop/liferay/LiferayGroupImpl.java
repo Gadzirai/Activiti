@@ -17,7 +17,7 @@ public class LiferayGroupImpl implements Group {
 
     @Override
     public String getId() {
-        return String.valueOf(portalGroup.getGroupId());
+        return String.valueOf(portalGroup.getName());
     }
 
     @Override
@@ -27,7 +27,7 @@ public class LiferayGroupImpl implements Group {
 
     @Override
     public String getName() {
-        return portalGroup.getName();
+        return portalGroup.getDescription();
     }
 
     @Override
